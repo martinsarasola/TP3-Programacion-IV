@@ -70,10 +70,18 @@ try {
   const t2=await expect('POST','/api/viajes',201,{...trip,kilometros:80});created.trips.push(t2.id);
   assert.equal((await expect('GET',`/api/viajes/${t.id}`,200)).vehiculo_id,v.id);
   assert.equal((await expect('GET','/api/viajes',200)).some(x=>x.id===t.id),true);
-  await expect('POST','/api/viajes',400,{...trip,vehiculo_id:4294967295});
-  await expect('POST','/api/viajes',400,{...trip,conductor_id:4294967295});
-  await expect('POST','/api/viajes',400,{...trip,kilometros:-1});
-  await expect('POST','/api/viajes',400,{...trip,fecha_llegada:'2026-01-01 07:00:00'});
+  const badVehicle=await expect('POST','/api/viajes',400,{...trip,vehiculo_id:4294967295});
+  assert.ok(badVehicle.details.some(item=>item.field==='vehiculo_id' && item.message));
+  const badDriver=await expect('POST','/api/viajes',400,{...trip,conductor_id:4294967295});
+  assert.ok(badDriver.details.some(item=>item.field==='conductor_id' && item.message));
+  const badKm=await expect('POST','/api/viajes',400,{...trip,kilometros:-1});
+  assert.ok(badKm.details.some(item=>item.field==='kilometros' && item.message));
+  const badDate=await expect('POST','/api/viajes',400,{...trip,fecha_llegada:'2026-01-01 07:00:00'});
+  assert.ok(badDate.details.some(item=>item.field==='fecha_llegada' && item.message));
+  const badFormat=await expect('POST','/api/viajes',400,{...trip,fecha_salida:'2026-11-16T19:11'});
+  assert.ok(badFormat.details.some(item=>item.field==='fecha_salida' && item.message.includes('AAAA-MM-DD')));
+  const missing=await expect('POST','/api/viajes',400,{...trip,origen:''});
+  assert.ok(missing.details.some(item=>item.field==='origen' && item.message));
   await expect('DELETE',`/api/vehiculos/${v.id}`,409);await expect('DELETE',`/api/conductores/${d.id}`,409);
   const hv=await expect('GET',`/api/vehiculos/${v.id}/viajes`,200), hd=await expect('GET',`/api/conductores/${d.id}/viajes`,200);
   assert.equal(hv.length,2);assert.equal(hd.length,2);assert.ok(hv.every(x=>x.vehiculo_id===v.id));assert.ok(hd.every(x=>x.conductor_id===d.id));
@@ -88,6 +96,13 @@ try {
   assert.equal(Number((await expect('GET',`/api/conductores/${d.id}/kilometros`,200)).total_kilometros),200);
   assert.equal(Number((await expect('GET',`/api/vehiculos/${otherVehicle.id}/kilometros`,200)).total_kilometros),10);
   await expect('GET','/api/vehiculos/4294967295/viajes',404);
+  const equalTime='2026-11-16 19:11:00';
+  const equal=await expect('POST','/api/viajes',201,{...trip,vehiculo_id:otherVehicle.id,conductor_id:otherDriver.id,fecha_salida:equalTime,fecha_llegada:equalTime,origen:'asd',destino:'asd',kilometros:123123});created.trips.push(equal.id);
+  const [[stored]]=await pool.execute('SELECT fecha_salida,fecha_llegada,kilometros,observaciones FROM viajes WHERE id=?',[equal.id]);
+  assert.equal(stored.fecha_salida,equalTime);assert.equal(stored.fecha_llegada,equalTime);assert.equal(stored.kilometros,'123123.00');assert.equal(stored.observaciones,null);
+  assert.equal(Number((await expect('GET',`/api/vehiculos/${otherVehicle.id}/kilometros`,200)).total_kilometros),123133);
+  assert.equal(Number((await expect('GET',`/api/conductores/${otherDriver.id}/kilometros`,200)).total_kilometros),123133);
+  console.log('Fechas iguales, persistencia y errores por campo: OK');
   console.log('QA-17–22: viajes, integridad, historiales, 120+80=200 y cero OK');
 } catch (error) { console.error('PRUEBA FALLIDA:',error.message); process.exitCode=1; }
 finally {

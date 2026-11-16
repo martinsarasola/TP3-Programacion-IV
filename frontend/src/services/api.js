@@ -11,6 +11,6 @@ export async function api(path, { method = 'GET', data, protectedRoute = true } 
   if (response.status === 401 && protectedRoute) { clearToken(); window.dispatchEvent(new Event('session-expired')); throw new Error('La sesión terminó. Iniciá sesión nuevamente.'); }
   if (response.status === 204) return null;
   const result = await response.json().catch(() => ({}));
-  if (!response.ok) { const error = new Error(result.error || 'No se pudo completar la operación.'); error.status = response.status; error.details = result.details || []; throw error; }
+  if (!response.ok) { const message = typeof result.error === 'string' && result.error.trim() ? result.error : `El servidor respondió con HTTP ${response.status}. Verificá la conexión con la API.`; const error = new Error(message); error.status = response.status; error.details = Array.isArray(result.details) ? result.details : []; throw error; }
   return result;
 }

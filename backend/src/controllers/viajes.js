@@ -5,7 +5,13 @@ export async function list(_req,res) { res.json(await listTrips()); }
 export async function get(req,res) { const trip=await findTrip(req.params.id); return trip ? res.json(trip) : res.status(404).json({ error: 'Viaje no encontrado' }); }
 export async function create(req,res) {
   const [vehicle, driver] = await Promise.all([vehicleModel.find(req.body.vehiculo_id), driverModel.find(req.body.conductor_id)]);
-  if (!vehicle || !driver) return res.status(400).json({ error: 'Vehículo o conductor inexistente' });
+  if (!vehicle || !driver) return res.status(400).json({
+    error: 'Revisá las referencias seleccionadas',
+    details: [
+      ...(!vehicle ? [{ field: 'vehiculo_id', message: 'El vehículo seleccionado ya no existe.' }] : []),
+      ...(!driver ? [{ field: 'conductor_id', message: 'El conductor seleccionado ya no existe.' }] : []),
+    ],
+  });
   const id=await createTrip(req.body);
   return res.status(201).json(await findTrip(id));
 }
