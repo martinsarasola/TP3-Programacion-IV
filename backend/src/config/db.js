@@ -18,6 +18,7 @@ export function getPool() {
       user: DB_USER,
       password: DB_PASSWORD,
       database: DB_NAME,
+      dateStrings: true,
       waitForConnections: true,
       connectionLimit: 10,
     });

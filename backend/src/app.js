@@ -5,6 +5,7 @@ import healthRouter from './routes/health.js';
 import authRouter from './routes/auth.js';
 import vehicleRouter from './routes/vehiculos.js';
 import driverRouter from './routes/conductores.js';
+import tripRouter from './routes/viajes.js';
 import { configurePassport } from './config/passport.js';
 
 const app = express();
@@ -16,10 +17,12 @@ app.use('/api/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/vehiculos', vehicleRouter);
 app.use('/api/conductores', driverRouter);
+app.use('/api/viajes', tripRouter);
 app.use((err, _req, res, _next) => {
   if (err.type === 'entity.parse.failed') return res.status(400).json({ error: 'JSON inválido' });
   if (err.code === 'ER_DUP_ENTRY') return res.status(409).json({ error: 'Ya existe un registro con un dato único' });
   if (err.code === 'ER_ROW_IS_REFERENCED_2') return res.status(409).json({ error: 'El recurso tiene viajes asociados' });
+  if (err.code === 'ER_NO_REFERENCED_ROW_2') return res.status(400).json({ error: 'Vehículo o conductor inexistente' });
   console.error('Request failed:', { code: typeof err.code === 'string' ? err.code : 'UNKNOWN' });
   return res.status(500).json({ error: 'Error interno del servidor' });
 });

@@ -2,14 +2,16 @@ import { Router } from 'express';
 import { authenticate } from '../middleware/authenticate.js';
 import { idParam, noQuery, validate } from '../middleware/validate.js';
 import { vehicleValidation } from '../validators/resources.js';
-import { createModel } from '../models/crud.js';
+import { vehicleModel } from '../models/resources.js';
 import { createController } from '../controllers/crud.js';
+import { history, mileage } from '../controllers/viajes.js';
 
-export const vehicleModel = createModel('vehiculos', ['marca','modelo','patente','anio','capacidad_carga']);
 const controller=createController(vehicleModel);
 const router=Router();
 router.use(authenticate);
 router.get('/', noQuery, validate, controller.list);
+router.get('/:id/viajes', noQuery, idParam, validate, history('vehiculo', vehicleModel));
+router.get('/:id/kilometros', noQuery, idParam, validate, mileage('vehiculo', vehicleModel));
 router.get('/:id', noQuery, idParam, validate, controller.get);
 router.post('/', noQuery, vehicleValidation, validate, controller.create);
 router.put('/:id', noQuery, idParam, vehicleValidation, validate, controller.update);
