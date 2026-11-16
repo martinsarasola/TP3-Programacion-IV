@@ -4,17 +4,25 @@ Sistema de gestión de transporte: frontend React y backend Express.
 
 ## Requisitos
 
-Node.js y npm. Para desarrollo local, usar terminales separadas:
+Node.js, npm y un servidor MySQL en ejecución. Desde la raíz de un clon del repositorio, instalar las dependencias bloqueadas:
+
+```powershell
+cd backend
+npm ci
+cd ..\frontend
+npm ci
+cd ..
+```
+
+Después de configurar la base y el archivo de entorno como se explica más abajo, iniciar el proyecto en terminales separadas:
 
 ```sh
 cd backend
-npm install
 npm run dev
 ```
 
 ```sh
 cd frontend
-npm install
 npm run dev
 ```
 
@@ -24,7 +32,13 @@ Para iniciar el backend sin modo de observación, ejecutar `npm start` en `backe
 
 ## Base de datos
 
-Crear una base MySQL dedicada y completar `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME` en `backend/.env` con una cuenta autorizada. Ejecutar `backend/sql/schema.sql` sobre esa base; por ejemplo, desde la raíz del proyecto en PowerShell:
+Crear una base MySQL dedicada, por ejemplo ejecutando `CREATE DATABASE transportos CHARACTER SET utf8mb4;` en el cliente MySQL con una cuenta autorizada. La cuenta configurada para la aplicación debe tener permisos sobre esa base. Desde la raíz del proyecto, crear el archivo local:
+
+```powershell
+Copy-Item backend/.env.example backend/.env
+```
+
+Completar `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` y `JWT_SECRET` en `backend/.env`; no compartir ni versionar ese archivo. Ejecutar `backend/sql/schema.sql` sobre la base creada; por ejemplo, desde la raíz del proyecto en PowerShell:
 
 ```powershell
 Get-Content -Raw backend/sql/schema.sql | mysql --host=127.0.0.1 --user=USUARIO --password NOMBRE_BASE
