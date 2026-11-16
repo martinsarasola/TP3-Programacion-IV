@@ -1,24 +1,3 @@
-import { useEffect, useState } from 'react';
-import { getHealth } from '../services/api.js';
-
-export default function HomePage() {
-  const [status, setStatus] = useState('Comprobando conexión con el servidor…');
-
-  useEffect(() => {
-    const controller = new AbortController();
-    getHealth(controller.signal)
-      .then(() => setStatus('Servidor disponible'))
-      .catch((error) => {
-        if (error.name !== 'AbortError') setStatus('Servidor no disponible');
-      });
-    return () => controller.abort();
-  }, []);
-
-  return (
-    <main>
-      <h1>Sistema de Gestión de Transporte</h1>
-      <p>Vehículos, conductores y viajes en un solo lugar.</p>
-      <p role="status">{status}</p>
-    </main>
-  );
+export default function HomePage({ navigate, user }) {
+  return <><section className="hero"><div><span className="eyebrow">GESTIÓN SIMPLE, OPERACIÓN CLARA</span><h1>Tu flota, en un solo lugar.</h1><p>Organizá vehículos, conductores y viajes. Consultá historiales y kilómetros recorridos cuando los necesites.</p><div className="actions"><button className="primary" onClick={() => navigate(user ? 'vehiculos' : 'login')}>{user ? 'Ir a vehículos' : 'Iniciar sesión'} <span aria-hidden="true">→</span></button>{!user && <button className="secondary" onClick={() => navigate('registro')}>Crear una cuenta</button>}</div></div><div className="hero-panel" aria-hidden="true"><div className="route-line">● <span>────────────</span> ◆</div><strong>Todo bajo control</strong><p>Una vista clara de tu operación.</p><div className="hero-metrics"><div><b>01</b><small>VEHÍCULOS</small></div><div><b>02</b><small>CONDUCTORES</small></div><div><b>03</b><small>VIAJES</small></div></div></div></section><section className="overview"><div><span>01</span><h2>Vehículos</h2><p>Administrá los datos de tu flota.</p></div><div><span>02</span><h2>Conductores</h2><p>Mantené actualizadas las licencias.</p></div><div><span>03</span><h2>Viajes</h2><p>Registrá recorridos y consultá historiales.</p></div></section></>;
 }

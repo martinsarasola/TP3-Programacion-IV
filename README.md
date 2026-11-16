@@ -36,6 +36,8 @@ El cliente solicitará la contraseña. Ajustar el ejecutable y el puerto según 
 
 Configurar un `JWT_SECRET` largo, aleatorio y privado en `backend/.env`, y reiniciar el servidor. Los endpoints son `POST /api/auth/register`, `POST /api/auth/login` y `GET /api/auth/me` (este último requiere `Authorization: Bearer <token>`). Hay solicitudes de ejemplo en `backend/http/auth.http`; sustituir los datos de prueba y el token. En un despliegue real, usar HTTPS para proteger las credenciales y los tokens en tránsito.
 
+El frontend guarda el token en `sessionStorage` durante la sesión de la pestaña y lo elimina al cerrar sesión o recibir un 401 de una ruta protegida. Al recargar, verifica la sesión con `/api/auth/me`.
+
 ## API de gestión
 
 Todas las rutas siguientes requieren `Authorization: Bearer <token>`. `vehiculos` y `conductores` admiten GET y POST en su colección, y GET, PUT y DELETE en `/:id`. PUT requiere todos los campos de la entidad. `viajes` admite GET y POST en la colección y GET en `/:id`. Los historiales y totales se consultan en `/:id/viajes` y `/:id/kilometros` de vehículos o conductores. No se admiten parámetros de consulta.
