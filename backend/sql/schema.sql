@@ -47,5 +47,5 @@ CREATE TABLE IF NOT EXISTS viajes (
   PRIMARY KEY (id),
   CONSTRAINT fk_viajes_vehiculo FOREIGN KEY (vehiculo_id) REFERENCES vehiculos (id) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT fk_viajes_conductor FOREIGN KEY (conductor_id) REFERENCES conductores (id) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT chk_viajes_fechas CHECK (fecha_llegada >= fecha_salida)
+  CONSTRAINT chk_viajes_fechas CHECK (fecha_llegada > fecha_salida)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -97,12 +97,17 @@ try {
   assert.equal(Number((await expect('GET',`/api/vehiculos/${otherVehicle.id}/kilometros`,200)).total_kilometros),10);
   await expect('GET','/api/vehiculos/4294967295/viajes',404);
   const equalTime='2026-11-16 19:11:00';
-  const equal=await expect('POST','/api/viajes',201,{...trip,vehiculo_id:otherVehicle.id,conductor_id:otherDriver.id,fecha_salida:equalTime,fecha_llegada:equalTime,origen:'asd',destino:'asd',kilometros:123123});created.trips.push(equal.id);
-  const [[stored]]=await pool.execute('SELECT fecha_salida,fecha_llegada,kilometros,observaciones FROM viajes WHERE id=?',[equal.id]);
-  assert.equal(stored.fecha_salida,equalTime);assert.equal(stored.fecha_llegada,equalTime);assert.equal(stored.kilometros,'123123.00');assert.equal(stored.observaciones,null);
+  const equal=await expect('POST','/api/viajes',400,{...trip,vehiculo_id:otherVehicle.id,conductor_id:otherDriver.id,fecha_salida:equalTime,fecha_llegada:equalTime,origen:'asd',destino:'asd',kilometros:123123});
+  assert.ok(equal.details.some(item=>item.field==='fecha_llegada' && item.message==='La llegada debe ser posterior a la salida.'));
+  const later='2026-11-16 19:11:01';
+  const valid=await expect('POST','/api/viajes',201,{...trip,vehiculo_id:otherVehicle.id,conductor_id:otherDriver.id,fecha_salida:equalTime,fecha_llegada:later,origen:'asd',destino:'asd',kilometros:123123});created.trips.push(valid.id);
+  const [[stored]]=await pool.execute('SELECT fecha_salida,fecha_llegada,kilometros,observaciones FROM viajes WHERE id=?',[valid.id]);
+  assert.equal(stored.fecha_salida,equalTime);assert.equal(stored.fecha_llegada,later);assert.equal(stored.kilometros,'123123.00');assert.equal(stored.observaciones,null);
+  await assert.rejects(pool.execute('UPDATE viajes SET fecha_llegada=fecha_salida WHERE id=?',[valid.id]), e => ['ER_SIGNAL_EXCEPTION','ER_CHECK_CONSTRAINT_VIOLATED'].includes(e.code));
+  await assert.rejects(pool.execute('INSERT INTO viajes (vehiculo_id,conductor_id,fecha_salida,fecha_llegada,origen,destino,kilometros) VALUES (?,?,?,?,?,?,?)',[otherVehicle.id,otherDriver.id,equalTime,equalTime,'A','B',1]), e => ['ER_SIGNAL_EXCEPTION','ER_CHECK_CONSTRAINT_VIOLATED'].includes(e.code));
   assert.equal(Number((await expect('GET',`/api/vehiculos/${otherVehicle.id}/kilometros`,200)).total_kilometros),123133);
   assert.equal(Number((await expect('GET',`/api/conductores/${otherDriver.id}/kilometros`,200)).total_kilometros),123133);
-  console.log('Fechas iguales, persistencia y errores por campo: OK');
+  console.log('Fechas iguales rechazadas, fecha posterior persistida y restricciones SQL: OK');
   console.log('QA-17–22: viajes, integridad, historiales, 120+80=200 y cero OK');
 } catch (error) { console.error('PRUEBA FALLIDA:',error.message); process.exitCode=1; }
 finally {

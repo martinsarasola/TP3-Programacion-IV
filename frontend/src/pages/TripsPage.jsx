@@ -10,7 +10,7 @@ export default function TripsPage(){
   useEffect(()=>{load();},[]);
   async function submit(e){e.preventDefault();setError('');setMessage('');const errors={};
     for(const [name,label] of [['vehiculo_id','Vehículo'],['conductor_id','Conductor'],['fecha_salida','Salida'],['fecha_llegada','Llegada'],['origen','Origen'],['destino','Destino'],['kilometros','Kilómetros']])if(!String(data[name]).trim())errors[name]='Este campo es obligatorio.';
-    if(data.fecha_salida && data.fecha_llegada && data.fecha_llegada<data.fecha_salida)errors.fecha_llegada='La llegada debe ser posterior o igual a la salida.';
+    if(data.fecha_salida && data.fecha_llegada && data.fecha_llegada<=data.fecha_salida)errors.fecha_llegada='La llegada debe ser posterior a la salida.';
     if(data.kilometros && !/^\d{1,8}(?:\.\d{1,2})?$/.test(data.kilometros))errors.kilometros='Ingresá un valor no negativo con hasta dos decimales.';
     for(const k of ['origen','destino']) if(data[k].trim().length>150)errors[k]='Máximo 150 caracteres.';
     setErrors(errors);if(Object.keys(errors).length)return;setBusy(true);

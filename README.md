@@ -32,6 +32,8 @@ Get-Content -Raw backend/sql/schema.sql | mysql --host=127.0.0.1 --user=USUARIO 
 
 El cliente solicitará la contraseña. Ajustar el ejecutable y el puerto según la instalación. El esquema usa `CREATE TABLE IF NOT EXISTS`: repetirlo conserva los datos, pero no migra ni valida tablas que ya existan. Las restricciones únicas de email, patente, documento y licencia son decisiones de diseño. Consultar `GET /api/health/db` para comprobar la conexión configurada.
 
+La llegada de un viaje debe ser estrictamente posterior a la salida. En una base ya existente, ejecutar `backend/sql/strict_trip_dates_existing.sql` con el cliente MySQL para aplicar la regla a nuevas inserciones y actualizaciones sin modificar viajes históricos. El usuario de MySQL necesita el privilegio `TRIGGER`; los registros antiguos con fechas iguales se conservan, pero deben corregirse antes de actualizarlos. Una base nueva creada con `schema.sql` ya incluye la restricción estricta.
+
 ## Autenticación
 
 Configurar un `JWT_SECRET` largo, aleatorio y privado en `backend/.env`, y reiniciar el servidor. Los endpoints son `POST /api/auth/register`, `POST /api/auth/login` y `GET /api/auth/me` (este último requiere `Authorization: Bearer <token>`). Hay solicitudes de ejemplo en `backend/http/auth.http`; sustituir los datos de prueba y el token. En un despliegue real, usar HTTPS para proteger las credenciales y los tokens en tránsito.

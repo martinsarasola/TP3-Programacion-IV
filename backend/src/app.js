@@ -23,6 +23,7 @@ app.use((err, _req, res, _next) => {
   if (err.code === 'ER_DUP_ENTRY') return res.status(409).json({ error: 'Ya existe un registro con un dato único' });
   if (err.code === 'ER_ROW_IS_REFERENCED_2') return res.status(409).json({ error: 'El recurso tiene viajes asociados' });
   if (err.code === 'ER_NO_REFERENCED_ROW_2') return res.status(400).json({ error: 'Vehículo o conductor inexistente' });
+  if (err.code === 'ER_SIGNAL_EXCEPTION' && err.sqlMessage === 'La llegada debe ser posterior a la salida.') return res.status(400).json({ error: 'Datos inválidos', details: [{ field: 'fecha_llegada', message: 'La llegada debe ser posterior a la salida.' }] });
   console.error('Request failed:', { code: typeof err.code === 'string' ? err.code : 'UNKNOWN' });
   return res.status(500).json({ error: 'Error interno del servidor' });
 });
