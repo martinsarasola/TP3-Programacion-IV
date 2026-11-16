@@ -1,0 +1,88 @@
+@base = http://localhost:3000/api
+@token = REEMPLAZAR_CON_TOKEN
+@vehiculoId = 1
+@conductorId = 1
+@viajeId = 1
+
+### Listar vehículos
+GET {{base}}/vehiculos
+Authorization: Bearer {{token}}
+
+### Obtener vehículo
+GET {{base}}/vehiculos/{{vehiculoId}}
+Authorization: Bearer {{token}}
+
+### Crear vehículo
+POST {{base}}/vehiculos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"marca":"Ejemplo","modelo":"Camión","patente":"EJEMPLO1","anio":2020,"capacidad_carga":1200.50}
+
+### Actualizar vehículo (reemplazar todos los campos)
+PUT {{base}}/vehiculos/{{vehiculoId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"marca":"Ejemplo","modelo":"Camión","patente":"EJEMPLO1","anio":2021,"capacidad_carga":1200.50}
+
+### Eliminar vehículo sin viajes
+DELETE {{base}}/vehiculos/{{vehiculoId}}
+Authorization: Bearer {{token}}
+
+### Listar conductores
+GET {{base}}/conductores
+Authorization: Bearer {{token}}
+
+### Obtener conductor
+GET {{base}}/conductores/{{conductorId}}
+Authorization: Bearer {{token}}
+
+### Crear conductor
+POST {{base}}/conductores
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"nombre":"Ejemplo","apellido":"Conductor","numero_documento":"DOC-EJEMPLO","numero_licencia":"LIC-EJEMPLO","fecha_alta_licencia":"2020-01-01","fecha_vencimiento_licencia":"2030-01-01"}
+
+### Actualizar conductor (reemplazar todos los campos)
+PUT {{base}}/conductores/{{conductorId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"nombre":"Ejemplo","apellido":"Actualizado","numero_documento":"DOC-EJEMPLO","numero_licencia":"LIC-EJEMPLO","fecha_alta_licencia":"2020-01-01","fecha_vencimiento_licencia":"2030-01-01"}
+
+### Eliminar conductor sin viajes
+DELETE {{base}}/conductores/{{conductorId}}
+Authorization: Bearer {{token}}
+
+### Registrar viaje
+POST {{base}}/viajes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"vehiculo_id":{{vehiculoId}},"conductor_id":{{conductorId}},"fecha_salida":"2026-01-01 08:00:00","fecha_llegada":"2026-01-01 12:00:00","origen":"Origen","destino":"Destino","kilometros":120,"observaciones":null}
+
+### Listar viajes
+GET {{base}}/viajes
+Authorization: Bearer {{token}}
+
+### Obtener viaje
+GET {{base}}/viajes/{{viajeId}}
+Authorization: Bearer {{token}}
+
+### Historial y kilómetros de vehículo
+GET {{base}}/vehiculos/{{vehiculoId}}/viajes
+Authorization: Bearer {{token}}
+
+###
+GET {{base}}/vehiculos/{{vehiculoId}}/kilometros
+Authorization: Bearer {{token}}
+
+### Historial y kilómetros de conductor
+GET {{base}}/conductores/{{conductorId}}/viajes
+Authorization: Bearer {{token}}
+
+###
+GET {{base}}/conductores/{{conductorId}}/kilometros
+Authorization: Bearer {{token}}

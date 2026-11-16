@@ -1,9 +1,10 @@
 import { Router } from 'express';
 import { getPool } from '../config/db.js';
+import { noQuery, validate } from '../middleware/validate.js';
 
 const router = Router();
-router.get('/', (_req, res) => res.status(200).json({ status: 'ok' }));
-router.get('/db', async (_req, res) => {
+router.get('/', noQuery, validate, (_req, res) => res.status(200).json({ status: 'ok' }));
+router.get('/db', noQuery, validate, async (_req, res) => {
   try {
     await getPool().query('SELECT 1');
     res.status(200).json({ status: 'ok', mysql: 'available' });

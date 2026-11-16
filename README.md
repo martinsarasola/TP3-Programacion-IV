@@ -35,3 +35,11 @@ El cliente solicitará la contraseña. Ajustar el ejecutable y el puerto según 
 ## Autenticación
 
 Configurar un `JWT_SECRET` largo, aleatorio y privado en `backend/.env`, y reiniciar el servidor. Los endpoints son `POST /api/auth/register`, `POST /api/auth/login` y `GET /api/auth/me` (este último requiere `Authorization: Bearer <token>`). Hay solicitudes de ejemplo en `backend/http/auth.http`; sustituir los datos de prueba y el token. En un despliegue real, usar HTTPS para proteger las credenciales y los tokens en tránsito.
+
+## API de gestión
+
+Todas las rutas siguientes requieren `Authorization: Bearer <token>`. `vehiculos` y `conductores` admiten GET y POST en su colección, y GET, PUT y DELETE en `/:id`. PUT requiere todos los campos de la entidad. `viajes` admite GET y POST en la colección y GET en `/:id`. Los historiales y totales se consultan en `/:id/viajes` y `/:id/kilometros` de vehículos o conductores. No se admiten parámetros de consulta.
+
+Los listados e historiales devuelven arreglos; la creación devuelve el objeto creado con HTTP 201, la modificación el objeto actualizado y la eliminación HTTP 204. Los totales devuelven `{ "total_kilometros": "200.00" }`; MySQL devuelve los valores DECIMAL como texto para conservar precisión. Las fechas de licencia usan `AAAA-MM-DD` y las de viaje `AAAA-MM-DD HH:mm:ss`. Consultar `backend/http/api.http` para los cuerpos completos. Una referencia inexistente o entrada inválida devuelve 400, una ruta protegida sin token 401, un recurso inexistente 404 y un conflicto de unicidad o borrado con viajes 409.
+
+Para verificar el backend contra la base configurada, ejecutar `npm run test:api` desde `backend`. La prueba inserta y luego elimina únicamente sus propios registros temporales; requiere acceso de escritura a esa base.

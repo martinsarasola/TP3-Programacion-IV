@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { getPool } from '../config/db.js';
 import { authenticate } from '../middleware/authenticate.js';
+import { noQuery, validate as validateQuery } from '../middleware/validate.js';
 
 const router = Router();
 const emailValidation = () => body('email').isString().bail().trim().isLength({ max: 254 }).isEmail().withMessage('Email inválido').normalizeEmail();
@@ -15,7 +16,7 @@ function validate(req, res, next) {
   return next();
 }
 
-router.post('/register', [
+router.post('/register', noQuery, validateQuery, [
   body('nombre').isString().bail().trim().isLength({ min: 1, max: 100 }).withMessage('Nombre inválido'),
   emailValidation(), passwordValidation(),
 ], validate, async (req, res, next) => {
@@ -30,7 +31,7 @@ router.post('/register', [
   }
 });
 
-router.post('/login', [emailValidation(), passwordValidation()], validate, async (req, res, next) => {
+router.post('/login', noQuery, validateQuery, [emailValidation(), passwordValidation()], validate, async (req, res, next) => {
   try {
     if (!process.env.JWT_SECRET) return res.status(503).json({ error: 'Autenticación no disponible' });
     const [rows] = await getPool().execute('SELECT id, nombre, email, password_hash FROM usuarios WHERE email = ?', [req.body.email]);
@@ -43,6 +44,6 @@ router.post('/login', [emailValidation(), passwordValidation()], validate, async
   }
 });
 
-router.get('/me', authenticate, (req, res) => res.json({ user: req.user }));
+router.get('/me', authenticate, noQuery, validateQuery, (req, res) => res.json({ user: req.user }));
 
 export default router;
