@@ -1610,3 +1610,31 @@ h1,h2,h3,p {
     top:27px
   }
 }
+
+/* La ilustración reserva el mapa y las etiquetas en áreas independientes. */
+.visual-map {
+  height: auto;
+  aspect-ratio: 2 / 1;
+  background-color: #f2f8f6;
+  background-image: linear-gradient(#dfeee9 1px, transparent 1px), linear-gradient(90deg, #dfeee9 1px, transparent 1px);
+  background-size: 35px 35px;
+}
+.visual-map svg {
+  position: static;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.visual-legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eef3f2;
+}
+.legend-item { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.legend-icon { display: grid; place-items: center; flex: 0 0 36px; height: 36px; border-radius: 9px; background: #eaf8f5; color: #0d9488; }
+.legend-item small, .legend-item strong { display: block; }
+.legend-item small { color: #809894; font-size: 9px; font-weight: 800; letter-spacing: .08em; }
+.legend-item strong { color: #294b50; font-size: 12px; margin-top: 4px; }
+@media (max-width: 440px) { .visual-legend { padding: 14px; gap: 8px; } .legend-item { gap: 7px; } }
