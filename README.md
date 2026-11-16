@@ -31,3 +31,7 @@ Get-Content -Raw backend/sql/schema.sql | mysql --host=127.0.0.1 --user=USUARIO 
 ```
 
 El cliente solicitará la contraseña. Ajustar el ejecutable y el puerto según la instalación. El esquema usa `CREATE TABLE IF NOT EXISTS`: repetirlo conserva los datos, pero no migra ni valida tablas que ya existan. Las restricciones únicas de email, patente, documento y licencia son decisiones de diseño. Consultar `GET /api/health/db` para comprobar la conexión configurada.
+
+## Autenticación
+
+Configurar un `JWT_SECRET` largo, aleatorio y privado en `backend/.env`, y reiniciar el servidor. Los endpoints son `POST /api/auth/register`, `POST /api/auth/login` y `GET /api/auth/me` (este último requiere `Authorization: Bearer <token>`). Hay solicitudes de ejemplo en `backend/http/auth.http`; sustituir los datos de prueba y el token. En un despliegue real, usar HTTPS para proteger las credenciales y los tokens en tránsito.

@@ -1,0 +1,28 @@
+@baseUrl = http://localhost:3000
+@token = REEMPLAZAR_CON_TOKEN
+
+### Registrar usuario de prueba (reemplazar datos)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "nombre": "Usuario de prueba",
+  "email": "prueba@example.com",
+  "password": "Ejemplo123!"
+}
+
+### Iniciar sesión
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "prueba@example.com",
+  "password": "Ejemplo123!"
+}
+
+### Diagnóstico protegido
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{token}}
+
+### Diagnóstico sin token: 401
+GET {{baseUrl}}/api/auth/me
